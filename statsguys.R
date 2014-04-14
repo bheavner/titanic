@@ -26,6 +26,10 @@ Pclass_survival[4] / (Pclass_survival[3] + Pclass_survival[4]) # 47.3% of second
 Pclass_survival[6] / (Pclass_survival[5] + Pclass_survival[6]) # 24.2% of third class
 
 # I'd like to see survived/deceased by class for men and for women...
+head(trainData$Survived & (trainData$Sex == 'female')) # logical test for living women
+head((trainData$Sex == 'female') & trainData$Pclass == 1)) # women in first class
+
+(Pclass_survival <- table(trainData$Survived, (trainData$Sex == 'female' & trainData$Pclass == 1)))
 
 # Other feature selection things to brainstorm...
 # survival rate based on fare rages, survival rate based on age ranges etc. The key idea is that we’re trying to determine if any/which of our variables are related to what we’re trying to predict: Survived
