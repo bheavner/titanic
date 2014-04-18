@@ -102,6 +102,8 @@ x.seq <- c(1, 2, 4, 5, 7, 8)
 ggplot(data = transform(df, x = x.seq), aes(x = x, y = percent_survived, width = .85)) + 
   geom_bar(stat = "identity", aes(fill = gender)) + 
   labs(x="Percent Survived by Class", y="") +
+  theme(legend.title=element_blank()) +
+  guides(fill = guide_legend(reverse=TRUE)) +
   scale_x_discrete(breaks = NULL) +
   geom_text(aes(x = c(sum(x.seq[1:2])/2, sum(x.seq[3:4])/2, sum(x.seq[5:6])/2), 
                 y = 0,
