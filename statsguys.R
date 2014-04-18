@@ -73,28 +73,38 @@ male_third_survivors <- sum(is_male_third_class & trainData$Survived) # 47
 # now try to make a bar plot of the above with ggplot. 
 # refs: www.cookbook-r.com/Graphs/Bar_and_line_graphs_(ggplot2)/
 # www.r-tutor.com/r-introduction/data-frame
+# stackoverflow.com/questions/12040245/how-to-increase-the-space-between-the-bars-in-a-bar-plot-inggplot2
 
-# data has to be in data frame for ggplot. IN PROGRESS. See www.cyclismo.org/tutorial/R/types.html
-a <- c(female_first_survivors, male_first_survivors, 
-       female_second_survivors, male_second_survivors
-       female_third_survivors, male_third_survivors)
+# data has to be in data frame for ggplot. So, I want to build one. See www.cyclismo.org/tutorial/R/types.html
 
-b <- c(female_first_number-female_first_survivors, 
-       male_first_number-male_first_survivors,
-       female_second_number-female_second_survivors,
-       male_second_number-male_second_survivors,
-       female_third_number-female_third_survivors, male_third_number-male_third_survivors)
+# I want to plot 3 pairs of bars on a bar plot: % survived by 1st, 2nd, and 3rd class, divided between men and women for each class.
 
-levels <- factor(c("survived", "deceased"))
+percent_women_first_survived <- (female_first_survivors / female_first_number) * 100
+percent_men_first_survived <- (male_first_survivors / male_first_number) * 100
+percent_women_second_survived <- (female_second_survivors / female_second_number) * 100
+percent_men_second_survived <- (male_second_survivors / male_second_number) * 100
+percent_women_third_survived <- (female_third_survivors / female_third_number) * 100
+percent_men_third_survived <- (male_third_survivors / male_third_number) * 100
 
-survivor_data <- data.frame(first = 
-  
-headers <- c("1st class female", "1st class male", "2nd class female", "2nd class male", "3rd class female", "3rd class male")
+df <- data.frame(gender = as.factor(c('Women', 'Men', 'Women', 'Men', 'Women', 'Men')),
+                 class = as.factor(c('First', 'First', 'Second', 'Second', 'Third', 'Third')), 
+                 percent_survived = c(percent_women_first_survived,
+                       percent_men_first_survived,
+                       percent_women_second_survived,
+                       percent_men_second_survived,
+                       percent_women_third_survived,
+                       percent_men_third_survived)) 
+str(df)
+# a data frame with 6 observations of 3 variables.... and viewing it, it is wrong.
 
-survivor_data <- data.frame("first class female" = female_first_survivors, female_first_number-female_first_survivors
-                            male_first_survivors, male_first_number-male_first_survivors
-                            female_second_survivors, female_second_number-female_second_survivors
-                            male_second_survivors, male_second_number-male_second_survivors
-                            female_third_survivors, female_third_number-female_third_survivors
-                            male_third_survivors, male_third_number-male_third_survivors, 
-                            row.names = rownames, names = headers)
+x.seq <- c(1, 2, 4, 5, 7, 8)
+
+ggplot(data = transform(df, x = x.seq), aes(x = x, y = percent_survived, width = .85)) + 
+  geom_bar(stat = "identity", aes(fill = gender)) + 
+  labs(x="Percent Survived by Class", y="") +
+  scale_x_discrete(breaks = NULL) +
+  geom_text(aes(x = c(sum(x.seq[1:2])/2, sum(x.seq[3:4])/2, sum(x.seq[5:6])/2), 
+                y = 0,
+                label = c("First", "Second", "Third")),
+                vjust = 1.2, size = 4)
+
