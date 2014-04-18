@@ -1,4 +1,5 @@
-# Following the logistic regression model approach from statsguys.wordpress.com/2014/01/03/first-post/
+# Following the logistic regression model approach from
+# statsguys.wordpress.com/2014/01/03/first-post/
 
 trainData <- read.csv("data/train.csv", header = TRUE, stringsAsFactors = FALSE)
 testData <- read.csv("data/test.csv", header = TRUE, stringsAsFactors = FALSE)
@@ -18,20 +19,82 @@ counts[2] / (counts[1] + counts[2]) # 74.2% probability of survival for women
 counts[4] / (counts[3] + counts[4]) # 18.9% probability of survival for men
 
 # survival rate by passenger class
-Pclass_survival <- table(trainData$Survived, trainData$Pclass)
+(Pclass_survival <- table(trainData$Survived, trainData$Pclass))
 barplot(Pclass_survival, xlab = "Cabin Class", ylab = "Number of People",
         main = "survived and deceased by cabin class")
 Pclass_survival[2] / (Pclass_survival[1] + Pclass_survival[2]) # 63.0% of first class
 Pclass_survival[4] / (Pclass_survival[3] + Pclass_survival[4]) # 47.3% of second class
 Pclass_survival[6] / (Pclass_survival[5] + Pclass_survival[6]) # 24.2% of third class
 
-# I'd like to see survived/deceased by class for men and for women...
-head(trainData$Survived & (trainData$Sex == 'female')) # logical test for living women
-head((trainData$Sex == 'female') & trainData$Pclass == 1)) # women in first class
-
-(Pclass_survival <- table(trainData$Survived, (trainData$Sex == 'female' & trainData$Pclass == 1)))
+## This is the end of the first lesson. Following is my exploration.
+require(ggplot2)
 
 # Other feature selection things to brainstorm...
 # survival rate based on fare rages, survival rate based on age ranges etc. The key idea is that we’re trying to determine if any/which of our variables are related to what we’re trying to predict: Survived
 
-# This is the end of the first lesson.
+# I'd like to see survived/deceased by class for men and for women...
+head(trainData$Survived & (trainData$Sex == 'female')) # logical test for living women
+head((trainData$Sex == 'female') & trainData$Pclass == 1)) # women in first class
+# how many women in first class?
+sum(((trainData$Sex == 'female') & trainData$Pclass == 1) == "TRUE") #94
+
+# how many of these survived?
+sum(((trainData$Sex == 'female') & trainData$Pclass == 1 & trainData$Survived) == "TRUE") #91
+
+# okay, so do that for men and women in each class. Make a data frame for the
+# info. Sure seems like a for loop, but there's probably a better way in R...
+#
+# Really, this seems like a very silly and redundant approach. I look forward to learning the better ways to do it.
+
+is_female_first_class <- trainData$Sex == 'female' & trainData$Pclass == 1
+female_first_number <- sum(is_female_first_class) # 94
+female_first_survivors <- sum(is_female_first_class & trainData$Survived) # 91
+
+is_male_first_class <- trainData$Sex == 'male' & trainData$Pclass == 1
+male_first_number <- sum(is_male_first_class) # 122
+male_first_survivors <- sum(is_male_first_class & trainData$Survived) # 45
+
+is_female_second_class <- trainData$Sex == 'female' & trainData$Pclass == 2
+female_second_number <- sum(is_female_second_class) # 76
+female_second_survivors <- sum(is_female_second_class & trainData$Survived) # 70
+
+is_male_second_class <- trainData$Sex == 'male' & trainData$Pclass == 2
+male_second_number <- sum(is_male_second_class) # 108
+male_second_survivors <- sum(is_male_second_class & trainData$Survived) # 17
+
+is_female_third_class <- trainData$Sex == 'female' & trainData$Pclass == 3
+female_third_number <- sum(is_female_third_class) # 144
+female_third_survivors <- sum(is_female_third_class & trainData$Survived) # 72
+
+is_male_third_class <- trainData$Sex == 'male' & trainData$Pclass == 3
+male_third_number <- sum(is_male_third_class) # 347
+male_third_survivors <- sum(is_male_third_class & trainData$Survived) # 47
+
+# now try to make a bar plot of the above with ggplot. 
+# refs: www.cookbook-r.com/Graphs/Bar_and_line_graphs_(ggplot2)/
+# www.r-tutor.com/r-introduction/data-frame
+
+# data has to be in data frame for ggplot. IN PROGRESS. See www.cyclismo.org/tutorial/R/types.html
+a <- c(female_first_survivors, male_first_survivors, 
+       female_second_survivors, male_second_survivors
+       female_third_survivors, male_third_survivors)
+
+b <- c(female_first_number-female_first_survivors, 
+       male_first_number-male_first_survivors,
+       female_second_number-female_second_survivors,
+       male_second_number-male_second_survivors,
+       female_third_number-female_third_survivors, male_third_number-male_third_survivors)
+
+levels <- factor(c("survived", "deceased"))
+
+survivor_data <- data.frame(first = 
+  
+headers <- c("1st class female", "1st class male", "2nd class female", "2nd class male", "3rd class female", "3rd class male")
+
+survivor_data <- data.frame("first class female" = female_first_survivors, female_first_number-female_first_survivors
+                            male_first_survivors, male_first_number-male_first_survivors
+                            female_second_survivors, female_second_number-female_second_survivors
+                            male_second_survivors, male_second_number-male_second_survivors
+                            female_third_survivors, female_third_number-female_third_survivors
+                            male_third_survivors, male_third_number-male_third_survivors, 
+                            row.names = rownames, names = headers)
