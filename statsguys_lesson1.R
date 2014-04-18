@@ -110,3 +110,5 @@ ggplot(data = transform(df, x = x.seq), aes(x = x, y = percent_survived, width =
                 label = c("First", "Second", "Third")),
                 vjust = 1.2, size = 4)
 
+# questions I have (and need to research to answer): gender and class alone looks pretty influential. For feature selection, how good is a model with just those two features? What's the relative cost/benefit to adding more features?
+
